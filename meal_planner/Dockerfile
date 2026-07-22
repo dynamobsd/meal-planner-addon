@@ -14,6 +14,12 @@ RUN npm run build          # produit /app/dist (chemins relatifs, base: './')
 # ---------- Étape 2 : image finale add-on ----------
 FROM python:3.12-slim
 
+# Le loader dynamique doit trouver libpython3.12.so.1.0 (dans /usr/local/lib).
+# Sous le runtime HA, /etc/ld.so.cache n'est pas toujours consulté -> sans ça :
+# « python: error while loading shared libraries: libpython3.12.so.1.0 ».
+ENV LD_LIBRARY_PATH=/usr/local/lib
+RUN ldconfig
+
 WORKDIR /app
 COPY backend/requirements.txt ./
 # lxml / pydantic-core fournissent des wheels manylinux pour amd64/arm64 :
