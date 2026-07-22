@@ -12,9 +12,10 @@ Application **maison** pour Home Assistant qui gère la **planification de repas
 |------|---------|------|
 | **1 — Fondations** | Structure add-on, backend FastAPI, schéma SQLite, CRUD recettes, frontend minimal | ✅ |
 | **2 — Import** | Scraping URL (recipe-scrapers → fallback JSON-LD → échec propre), parseur d'ingrédients FR, auto-catégorisation avec mémoire apprenante | ✅ |
-| **3 — Planning** | Calendrier hebdo, drag & drop + alternative tactile, portions | ⏳ |
-| **4 — Liste d'épicerie** | Agrégation + conversion d'unités + garde-manger + regroupement par rayon (+ tests) | ⏳ |
-| **5 — Finitions** | Notes/étoiles, réglages des rayons, PWA hors ligne, polish UI, thème | ⏳ |
+| **3 — Planning** | Calendrier hebdo jour-par-jour, sélecteur tactile (alternative au drag & drop), portions | ✅ |
+| **4 — Liste d'épicerie** | Agrégation + conversion d'unités + garde-manger + regroupement par rayon (103 tests) | ✅ |
+| **5 — Finitions** | Notes/étoiles, réglages des rayons, PWA hors ligne, polish UI, thème HA | ✅ |
+| **Bonus — Alerte aubaines** | IA Claude : scanne une circulaire et priorise ce qui est sur ta liste | ✅ |
 
 ---
 
@@ -41,13 +42,20 @@ meal-planner-addon/
 
 ---
 
-## Fonctionnalités livrées (Phases 1–2)
+## Fonctionnalités livrées
 
 - **Import par lien** : `POST /api/recipes/scrape` renvoie un brouillon éditable (non sauvegardé), déjà parsé et catégorisé. Cascade `recipe-scrapers` → **JSON-LD `schema.org/Recipe`** (gère `@graph`, `@type` liste, `HowToStep`/`HowToSection`, durées ISO 8601) → échec propre **HTTP 422** (jamais de 500).
-- **Parseur d'ingrédients FR maison** : fractions (`1/2`, `½`, `1 ½`), plages (`2 à 3` → borne haute), unités FR + abréviations normalisées, liant `de`/`d'`, sans-unité, et **séparation des qualificatifs de préparation** (`haché`, `frais`…) pour que `tomate hachée` = `2 tomates` = même `nom_normalise`. **42 tests unitaires.**
-- **Auto-catégorisation apprenante** : `nom_normalise` → rayon via mémoire (`ingredient_category_map`) → dictionnaire par défaut (**260 ingrédients**) → « Autre ». Corriger un rayon dans l'UI met à jour la mémoire (`PUT /api/categories/learn`).
-- **CRUD recettes** + notes personnelles + note en étoiles.
-- **Frontend mobile-first** : bottom-nav, formulaire d'import unifié (scrape/manuel/édition), thème clair/sombre calé sur les variables Home Assistant, cibles tactiles ≥ 44 px.
+- **Parseur d'ingrédients FR maison** : fractions (`1/2`, `½`, `1 ½`), plages (`2 à 3` → borne haute), unités FR + abréviations normalisées, liant `de`/`d'`, sans-unité, et **séparation des qualificatifs de préparation** (`haché`, `frais`…) pour que `tomate hachée` = `2 tomates` = même `nom_normalise`.
+- **Auto-catégorisation apprenante** : `nom_normalise` → rayon via mémoire (`ingredient_category_map`) → dictionnaire par défaut (**260 ingrédients**) → « Autre ». Corriger un rayon met à jour la mémoire.
+- **Planning hebdomadaire** : vue jour-par-jour (7 j × 4 créneaux), sélecteur de recette tactile (alternative fiable au drag & drop au doigt), portions par repas, navigation semaine.
+- **Liste d'épicerie** ⭐ : agrégation des ingrédients de la semaine, **mise à l'échelle** selon les portions, **conversion d'unités** (masse/volume), **soustraction du garde-manger**, unités incompatibles laissées en lignes séparées avec avertissement, regroupement par **rayon** (en-têtes collants).
+- **Garde-manger** : « ce qu'on a déjà », soustrait de la liste ; bouton « j'en ai déjà » depuis la liste.
+- **Rayons configurables** : créer / renommer / réordonner / supprimer (ordre de parcours en magasin).
+- **Alerte aubaines (IA)** : colle le texte d'une circulaire → Claude extrait les rabais et **priorise ceux qui sont sur ta liste** (option `anthropic_api_key`).
+- **PWA hors ligne** : la dernière liste reste consultable et cochable sans réseau, resync des coches au retour en ligne.
+- **Frontend mobile-first** : bottom-nav, thème clair/sombre calé sur Home Assistant, cibles tactiles ≥ 44 px, notes perso + note en étoiles.
+
+**Tests** : 103 tests unitaires (parseur / conversion d'unités / agrégation) + smokes d'intégration API, tous au vert.
 
 ---
 
