@@ -1,0 +1,6 @@
+# Image de base par architecture pour le build de l'add-on.
+# python:3.12-slim est un manifeste multi-arch officiel (amd64 + arm64),
+# ce qui évite tout tag d'image de base HA introuvable.
+build_from:
+  aarch64: python:3.12-slim
+  amd64: python:3.12-slim

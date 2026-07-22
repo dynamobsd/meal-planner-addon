@@ -1,0 +1,127 @@
+name: CI
+
+# Valide le packaging de l'add-on, exécute les tests backend et build le frontend
+# à chaque push et pull request sur la branche main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Lint : valide que config.yaml et repository.yaml sont du YAML correct et
+  # contiennent les clés requises par Home Assistant.
+  # (Aucune action de lint officielle HA n'existe pour les add-ons — hassfest
+  #  ne cible que les intégrations — donc validation YAML explicite en Python.)
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint (config add-on)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Valider config.yaml et repository.yaml
+        shell: python
+        run: |
+          import sys
+          import yaml
+
+          errors = []
+
+          # --- config.yaml de l'add-on ---
+          with open('meal_planner/config.yaml', encoding='utf-8') as f:
+              config = yaml.safe_load(f)
+          if not isinstance(config, dict):
+              errors.append('config.yaml : la racine doit être un mapping YAML.')
+              config = {}
+
+          required = ['name', 'slug', 'version', 'arch', 'ingress']
+          for key in required:
+              if key not in config:
+                  errors.append(f'config.yaml : clé requise manquante « {key} ».')
+
+          if 'arch' in config and not isinstance(config['arch'], list):
+              errors.append('config.yaml : « arch » doit être une liste.')
+          if config.get('ingress') is not True:
+              errors.append('config.yaml : « ingress » doit valoir true.')
+          if 'slug' in config and not str(config['slug']).strip():
+              errors.append('config.yaml : « slug » ne doit pas être vide.')
+
+          # --- repository.yaml ---
+          with open('repository.yaml', encoding='utf-8') as f:
+              repo = yaml.safe_load(f)
+          if not isinstance(repo, dict):
+              errors.append('repository.yaml : la racine doit être un mapping YAML.')
+              repo = {}
+          if 'name' not in repo:
+              errors.append('repository.yaml : clé requise manquante « name ».')
+
+          if errors:
+              print('Validation ÉCHOUÉE :')
+              for e in errors:
+                  print(f'  - {e}')
+              sys.exit(1)
+
+          print('config.yaml et repository.yaml valides.')
+          print(f"  add-on : {config.get('name')} (slug={config.get('slug')}, "
+                f"version={config.get('version')})")
+
+  # ---------------------------------------------------------------------------
+  # Tests : logique métier backend (parseur d'ingrédients, unités, agrégation).
+  # ---------------------------------------------------------------------------
+  tests:
+    name: Tests backend (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installer les dépendances backend
+        run: pip install -r meal_planner/backend/requirements.txt
+
+      - name: Exécuter les tests
+        working-directory: meal_planner
+        run: >-
+          python -m pytest
+          backend/tests/test_ingredient_parser.py
+          backend/tests/test_units.py
+          backend/tests/test_aggregator.py
+          -q
+
+  # ---------------------------------------------------------------------------
+  # Frontend : vérifie que la SPA React/Vite build sans erreur.
+  # ---------------------------------------------------------------------------
+  frontend:
+    name: Build frontend (Vite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installer les dépendances
+        working-directory: meal_planner/frontend
+        run: npm install
+
+      - name: Build
+        working-directory: meal_planner/frontend
+        run: npm run build

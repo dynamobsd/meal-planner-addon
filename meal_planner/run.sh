@@ -1,13 +1,17 @@
-#!/usr/bin/with-contenv bashio
+#!/usr/bin/env bash
 # Démarre le backend FastAPI. L'ingress HA proxifie vers le port 8099.
 set -e
 
 export MP_DB_PATH="/data/meals.db"
 export MP_FRONTEND_DIST="/app/frontend_dist"
 
-# Clé API Anthropic (option de l'add-on) -> feature « Alerte aubaines »
-if bashio::config.has_value 'anthropic_api_key'; then
-    export ANTHROPIC_API_KEY="$(bashio::config 'anthropic_api_key')"
+# Clé API Anthropic depuis les options de l'add-on (/data/options.json).
+# HA écrit les options dans ce fichier ; pas de dépendance à bashio.
+if [ -f /data/options.json ]; then
+    KEY="$(python3 -c 'import json; print(json.load(open("/data/options.json")).get("anthropic_api_key",""))' 2>/dev/null || true)"
+    if [ -n "$KEY" ]; then
+        export ANTHROPIC_API_KEY="$KEY"
+    fi
 fi
 
 cd /app
