@@ -1,5 +1,13 @@
 # Journal des versions
 
+## 0.4.0
+
+- **Planning automatique (IA)** : depuis le Planning, l'IA remplit la semaine en plaçant vos recettes sur les créneaux choisis (varié, selon vos goûts). Les créneaux sans recette adaptée sont signalés comme idées.
+- **Recettes favorites** : marquez vos recettes d'un ❤ et filtrez sur les favoris.
+- **Dupliquer une semaine** : recopiez le planning d'une semaine vers une autre en un geste.
+- **Partager la liste d'épicerie** : export en texte, via le partage natif du téléphone ou le presse-papier.
+- **Échelle des portions** : sur une recette, ajustez le nombre de portions et voyez les quantités recalculées.
+
 ## 0.3.0
 
 - **Type de plat sur les recettes** : classe chaque recette (déjeuner, dessert, plat principal, entrée, accompagnement, soupe, salade, collation, boisson…). Recherche par texte et **filtre par type** dans la liste des recettes et dans le sélecteur du planning.

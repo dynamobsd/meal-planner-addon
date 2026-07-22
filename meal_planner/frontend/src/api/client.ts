@@ -2,9 +2,11 @@
 // Le backend injecte <base href="..."> au runtime : on résout l'URL de l'API
 // contre cette base. JAMAIS de fetch('/api/...') absolu qui casserait le proxy.
 import type {
+  AutoPlanResponse,
   Category,
   DealsScanResponse,
   DealsStatus,
+  GroceryExport,
   GroceryItemOut,
   GroceryRayon,
   MealPlanOut,
@@ -53,19 +55,25 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 // Recettes
 // --------------------------------------------------------------------------- //
 
-// Liste des recettes, avec filtres optionnels par type de plat et recherche.
+// Liste des recettes, avec filtres optionnels par type de plat, recherche, favoris.
 export const listRecipes = (filters?: {
   categorie_plat?: string;
   q?: string;
+  favori?: boolean;
 }) => {
   const params = new URLSearchParams();
   if (filters?.categorie_plat) params.set('categorie_plat', filters.categorie_plat);
   if (filters?.q) params.set('q', filters.q);
+  if (filters?.favori) params.set('favori', 'true');
   const qs = params.toString();
   return request<RecipeSummary[]>(`recipes${qs ? `?${qs}` : ''}`);
 };
 
 export const getRecipe = (id: number) => request<RecipeOut>(`recipes/${id}`);
+
+/** Bascule le statut favori d'une recette et renvoie le résumé à jour. */
+export const toggleFavori = (id: number) =>
+  request<RecipeSummary>(`recipes/${id}/favori`, { method: 'POST' });
 
 /** Liste des types de plat (Déjeuner, Souper, Dessert…) pour peupler les selects. */
 export const getTypesPlat = () => request<string[]>('types-plat');
@@ -172,6 +180,30 @@ export const updateMeal = (
 export const deleteMeal = (id: number) =>
   request<void>(`meal-plan/${id}`, { method: 'DELETE' });
 
+/** Génère automatiquement (IA) une semaine de repas. */
+export const autoPlan = (body: {
+  semaine: string;
+  creneaux: string[];
+  jours: number;
+  remplacer: boolean;
+  preferences?: string;
+}) =>
+  request<AutoPlanResponse>('meal-plan/auto', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+
+/** Duplique une semaine de planning vers une semaine cible. */
+export const duplicateWeek = (body: {
+  source_semaine: string;
+  cible_semaine: string;
+  remplacer: boolean;
+}) =>
+  request<MealPlanOut[]>('meal-plan/duplicate', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+
 // --------------------------------------------------------------------------- //
 // Épicerie (Phase 4)
 // --------------------------------------------------------------------------- //
@@ -213,6 +245,10 @@ export const haveGrocery = (id: number, addToPantry: boolean) =>
   request<void>(`grocery/${id}/have?add_to_pantry=${addToPantry}`, {
     method: 'POST',
   });
+
+/** Export texte de la liste (pour partage / presse-papier). */
+export const exportGrocery = (semaine: string) =>
+  request<GroceryExport>(`grocery/export?semaine=${encodeURIComponent(semaine)}`);
 
 // --------------------------------------------------------------------------- //
 // Garde-manger (Phase 4)

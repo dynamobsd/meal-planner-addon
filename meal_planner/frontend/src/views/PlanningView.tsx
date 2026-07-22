@@ -22,6 +22,7 @@ import {
 } from '../utils/date';
 import { RecipePicker } from '../components/RecipePicker';
 import { SuggestionsView } from './SuggestionsView';
+import { AutoPlanPanel, DuplicateWeekPanel } from './PlanningActions';
 
 const CRENEAUX: { type: MealType; label: string }[] = [
   { type: 'dejeuner', label: 'Déjeuner' },
@@ -47,6 +48,10 @@ export function PlanningView({ onOpenRecipe, onCreateRecipe }: Props) {
     null,
   );
   const [showSuggestions, setShowSuggestions] = useState(false);
+  // Menu d'actions compact (évite le débordement du header à 390px).
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [autoOpen, setAutoOpen] = useState(false);
+  const [dupOpen, setDupOpen] = useState(false);
 
   const start = toISODate(monday);
 
@@ -119,14 +124,58 @@ export function PlanningView({ onOpenRecipe, onCreateRecipe }: Props) {
 
   return (
     <div>
-      {/* Barre d'action du planning : accès aux suggestions IA */}
+      {/* Barre d'action compacte : menu déroulant pour éviter tout débordement
+          à 390px (Suggestions IA, génération auto, duplication). */}
       <div className="planning-top">
-        <button
-          className="btn secondary"
-          onClick={() => setShowSuggestions(true)}
-        >
-          💡 Suggestions
-        </button>
+        <div className="actions-wrap">
+          <button
+            className="btn secondary"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            ⋯ Actions
+          </button>
+          {menuOpen && (
+            <>
+              {/* Zone cliquable de fermeture */}
+              <div
+                className="menu-backdrop"
+                onClick={() => setMenuOpen(false)}
+                role="presentation"
+              />
+              <div className="actions-menu" role="menu">
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setShowSuggestions(true);
+                  }}
+                >
+                  💡 Suggestions
+                </button>
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setAutoOpen(true);
+                  }}
+                >
+                  🤖 Générer ma semaine
+                </button>
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setDupOpen(true);
+                  }}
+                >
+                  📋 Dupliquer
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Navigation de semaine */}
@@ -227,6 +276,22 @@ export function PlanningView({ onOpenRecipe, onCreateRecipe }: Props) {
           title="Choisir une recette"
           onPick={pick}
           onClose={() => setPicker(null)}
+        />
+      )}
+
+      {autoOpen && (
+        <AutoPlanPanel
+          semaine={start}
+          onClose={() => setAutoOpen(false)}
+          onReload={load}
+        />
+      )}
+
+      {dupOpen && (
+        <DuplicateWeekPanel
+          sourceMonday={monday}
+          onClose={() => setDupOpen(false)}
+          onReload={load}
         />
       )}
     </div>

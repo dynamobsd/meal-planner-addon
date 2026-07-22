@@ -1,7 +1,7 @@
 # Métadonnées de l'add-on Home Assistant
 # Doc : https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Planif Repas & Épicerie"
-version: "0.3.0"
+version: "0.4.0"
 slug: meal_planner
 description: >-
   Planification de repas hebdomadaire + liste d'épicerie intelligente

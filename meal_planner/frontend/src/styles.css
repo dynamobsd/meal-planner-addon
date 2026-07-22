@@ -1161,3 +1161,164 @@ button {
   background: var(--mp-secondary-bg);
   font-size: 0.82rem;
 }
+
+/* ------------------------------------------------------------------ */
+/* Phase 9 — favoris, échelle portions, actions planning, partage       */
+/* ------------------------------------------------------------------ */
+
+/* Bouton favori (cœur) */
+.fav-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fav-btn.sm {
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1.4rem;
+}
+
+.fav-btn.lg {
+  min-width: 48px;
+  min-height: 48px;
+  font-size: 1.8rem;
+}
+
+/* Cœur superposé sur la vignette de carte */
+.thumb-wrap {
+  position: relative;
+}
+
+.thumb-wrap .fav-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+  backdrop-filter: blur(2px);
+}
+
+.recipe-card[role='button'] {
+  cursor: pointer;
+}
+
+.detail-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* Sélecteur d'échelle des portions */
+.portions-scaler {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--mp-secondary-bg);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.ps-label {
+  font-weight: 600;
+  color: var(--mp-text-secondary);
+}
+
+.ps-stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ps-btn {
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: var(--mp-card);
+  color: var(--mp-primary);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.ps-value {
+  min-width: 40px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.ps-reset {
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--mp-primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Menu d'actions du planning (anti-débordement à 390px) */
+.planning-top .actions-wrap {
+  position: relative;
+}
+
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 39;
+}
+
+.actions-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 40;
+  min-width: 220px;
+  background: var(--mp-card);
+  border: 1px solid var(--mp-divider);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.actions-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: var(--mp-text);
+  font-size: 1rem;
+  border-bottom: 1px solid var(--mp-divider);
+}
+
+.actions-menu button:last-child {
+  border-bottom: none;
+}
+
+.actions-menu button:active {
+  background: var(--mp-secondary-bg);
+}
+
+/* Toast éphémère */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--mp-nav-h) + 24px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 60;
+  background: var(--mp-text);
+  color: var(--mp-bg);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}

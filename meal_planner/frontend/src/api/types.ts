@@ -8,6 +8,7 @@ export interface RecipeSummary {
   portions?: number | null;
   note_etoiles: number;
   categorie_plat?: string | null;
+  favori: number; // 0 | 1
 }
 
 // Ingrédient tel que renvoyé par l'API (Out) ou fourni dans un brouillon (Draft).
@@ -35,6 +36,7 @@ export interface RecipeOut {
   note_perso?: string | null;
   note_etoiles: number;
   categorie_plat?: string | null;
+  favori: number; // 0 | 1
   date_ajout: string;
   ingredients: Ingredient[];
 }
@@ -57,6 +59,9 @@ export interface RecipeInput {
   note_perso: string | null;
   note_etoiles: number;
   categorie_plat: string | null;
+  // Optionnel : le favori se bascule via son endpoint dédié ; on ne l'envoie
+  // pas depuis le formulaire (le backend préserve la valeur existante).
+  favori?: number; // 0 | 1
   ingredients: Array<{
     texte_brut: string;
     nom_normalise: string;
@@ -198,4 +203,21 @@ export interface SuggestionsResponse {
   disponible: boolean;
   message?: string | null;
   suggestions: MealSuggestion[];
+}
+
+// --------------------------------------------------------------------------- //
+// Phase 9 — planning auto, duplication, export épicerie
+// --------------------------------------------------------------------------- //
+
+export interface AutoPlanResponse {
+  ok: boolean;
+  disponible: boolean;
+  message?: string | null;
+  ajoutes: MealPlanOut[];
+  idees_manquantes: MealSuggestion[];
+}
+
+export interface GroceryExport {
+  semaine: string;
+  texte: string;
 }

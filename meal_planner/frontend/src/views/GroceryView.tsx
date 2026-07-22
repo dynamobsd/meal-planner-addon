@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   addGroceryManual,
   deleteGrocery,
+  exportGrocery,
   generateGrocery,
   getGrocery,
   haveGrocery,
@@ -38,6 +39,10 @@ export function GroceryView() {
   const [manualOpen, setManualOpen] = useState(false);
   const [toDelete, setToDelete] = useState<GroceryItemOut | null>(null);
   const [showDeals, setShowDeals] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  // Repli si ni partage ni presse-papier : on affiche le texte à copier.
+  const [shareText, setShareText] = useState<string | null>(null);
 
   // Charge la liste : réseau d'abord, repli sur le cache local si hors ligne.
   const load = useCallback(async () => {
@@ -161,6 +166,34 @@ export function GroceryView() {
     }
   };
 
+  const flashToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2200);
+  };
+
+  // Partage : Web Share API si dispo, sinon presse-papier, sinon modale copiable.
+  const share = async () => {
+    setSharing(true);
+    setError(null);
+    try {
+      const { texte } = await exportGrocery(semaine);
+      if (navigator.share) {
+        await navigator.share({ title: "Liste d'épicerie", text: texte });
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(texte);
+        flashToast('Copié ✓');
+      } else {
+        setShareText(texte); // repli ultime : affichage du texte
+      }
+    } catch (e) {
+      // AbortError = l'utilisateur a annulé le partage natif : on l'ignore.
+      if (e instanceof DOMException && e.name === 'AbortError') return;
+      setError(e instanceof ApiError ? e.message : 'Partage impossible.');
+    } finally {
+      setSharing(false);
+    }
+  };
+
   if (showDeals) {
     return <DealsView semaine={semaine} onBack={() => setShowDeals(false)} />;
   }
@@ -213,6 +246,13 @@ export function GroceryView() {
           disabled={offline}
         >
           🏷️ Scanner une circulaire
+        </button>
+        <button
+          className="btn secondary"
+          onClick={share}
+          disabled={sharing || offline}
+        >
+          {sharing ? '…' : '📤 Partager'}
         </button>
       </div>
 
@@ -313,6 +353,47 @@ export function GroceryView() {
           onConfirm={confirmDelete}
           onCancel={() => setToDelete(null)}
         />
+      )}
+
+      {/* Toast éphémère (ex : « Copié ✓ ») */}
+      {toast && <div className="toast">{toast}</div>}
+
+      {/* Repli ultime de partage : texte copiable dans une modale */}
+      {shareText != null && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShareText(null)}
+          role="presentation"
+        >
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Liste d'épicerie"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3>Liste d'épicerie</h3>
+            <textarea
+              readOnly
+              value={shareText}
+              style={{
+                width: '100%',
+                minHeight: 220,
+                padding: 10,
+                borderRadius: 10,
+                border: '1px solid var(--mp-divider)',
+                background: 'var(--mp-card)',
+                color: 'var(--mp-text)',
+              }}
+              onFocus={(e) => e.currentTarget.select()}
+            />
+            <div className="actions">
+              <button className="btn block" onClick={() => setShareText(null)}>
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
