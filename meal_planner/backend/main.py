@@ -24,6 +24,8 @@ from .routers import (
     meal_plan,
     pantry,
     recipes,
+    settings,
+    suggestions,
 )
 
 
@@ -50,6 +52,8 @@ app.include_router(meal_plan.router, prefix="/api")
 app.include_router(pantry.router, prefix="/api")
 app.include_router(grocery.router, prefix="/api")
 app.include_router(deals.router, prefix="/api")
+app.include_router(settings.router, prefix="/api")
+app.include_router(suggestions.router, prefix="/api")
 
 
 @app.get("/api/health")

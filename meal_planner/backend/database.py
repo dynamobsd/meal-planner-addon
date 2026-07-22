@@ -43,12 +43,30 @@ def get_db() -> Iterator[Session]:
         db.close()
 
 
+def _run_migrations() -> None:
+    """Migrations légères pour les DB existantes (SQLite, sans Alembic).
+
+    create_all() crée les tables absentes mais n'ajoute pas les colonnes
+    ajoutées après coup à une table existante -> on le fait à la main.
+    """
+    from sqlalchemy import text
+
+    with engine.begin() as conn:
+        cols = {
+            row[1]
+            for row in conn.exec_driver_sql("PRAGMA table_info(recipes)").fetchall()
+        }
+        if "categorie_plat" not in cols:
+            conn.exec_driver_sql("ALTER TABLE recipes ADD COLUMN categorie_plat TEXT")
+
+
 def init_db() -> None:
-    """Crée les tables si absentes, puis seed les données par défaut."""
+    """Crée les tables si absentes, migre, puis seed les données par défaut."""
     from . import models  # noqa: F401  (enregistre les tables)
     from .seed import seed_defaults
 
     Base.metadata.create_all(bind=engine)
+    _run_migrations()
     with SessionLocal() as db:
         seed_defaults(db)
         db.commit()

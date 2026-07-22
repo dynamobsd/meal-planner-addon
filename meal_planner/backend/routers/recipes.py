@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models import Category, Ingredient, Recipe
 from ..schemas import (
+    TYPES_PLAT,
     IngredientOut,
     RecipeCreate,
     RecipeOut,
@@ -16,6 +17,12 @@ from ..schemas import (
 )
 
 router = APIRouter(tags=["recipes"])
+
+
+@router.get("/types-plat", response_model=list[str])
+def list_types_plat():
+    """Types de plat proposés pour classer les recettes."""
+    return list(TYPES_PLAT)
 
 
 def _category_names(db: Session) -> dict[int, str]:
@@ -30,8 +37,18 @@ def _to_recipe_out(recipe: Recipe, cat_names: dict[int, str]) -> RecipeOut:
 
 
 @router.get("/recipes", response_model=list[RecipeSummary])
-def list_recipes(db: Session = Depends(get_db)):
-    recipes = db.scalars(select(Recipe).order_by(Recipe.date_ajout.desc())).all()
+def list_recipes(
+    categorie_plat: str | None = None,
+    q: str | None = None,
+    db: Session = Depends(get_db),
+):
+    """Liste des recettes, filtrable par type de plat et recherche texte."""
+    stmt = select(Recipe)
+    if categorie_plat:
+        stmt = stmt.where(Recipe.categorie_plat == categorie_plat)
+    if q:
+        stmt = stmt.where(Recipe.titre.ilike(f"%{q.strip()}%"))
+    recipes = db.scalars(stmt.order_by(Recipe.date_ajout.desc())).all()
     return recipes
 
 

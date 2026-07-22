@@ -40,6 +40,7 @@ class Recipe(Base):
     instructions: Mapped[str | None] = mapped_column(Text)
     note_perso: Mapped[str | None] = mapped_column(Text)         # "nos notes"
     note_etoiles: Mapped[int] = mapped_column(Integer, default=0)  # 0..5
+    categorie_plat: Mapped[str | None] = mapped_column(Text)      # type de repas (dessert, plat principal…)
     date_ajout: Mapped[str] = mapped_column(Text, default=_utcnow_iso)
 
     ingredients: Mapped[list["Ingredient"]] = relationship(
@@ -115,3 +116,13 @@ class GroceryItem(Base):
     coche: Mapped[int] = mapped_column(Integer, default=0)       # bool 0/1
     source: Mapped[str] = mapped_column(Text, default="auto")    # auto|manuel
     avertissement: Mapped[str | None] = mapped_column(Text)
+
+
+class AppSetting(Base):
+    """Réglages clé/valeur (ex: préférences de goûts pour les suggestions IA)."""
+
+    __tablename__ = "app_settings"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    cle: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    valeur: Mapped[str | None] = mapped_column(Text)

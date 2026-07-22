@@ -41,6 +41,23 @@ class IngredientDraft(IngredientBase):
 # --------------------------------------------------------------------------- #
 
 
+# Types de plat proposés (catégorie de la recette, distinct du créneau du planning)
+TYPES_PLAT = (
+    "Déjeuner",
+    "Dîner",
+    "Souper",
+    "Entrée",
+    "Plat principal",
+    "Accompagnement",
+    "Soupe",
+    "Salade",
+    "Dessert",
+    "Collation",
+    "Boisson",
+    "Autre",
+)
+
+
 class RecipeBase(BaseModel):
     titre: str
     url_source: str | None = None
@@ -51,6 +68,7 @@ class RecipeBase(BaseModel):
     instructions: str | None = None
     note_perso: str | None = None
     note_etoiles: int = Field(default=0, ge=0, le=5)
+    categorie_plat: str | None = None      # type de plat (dessert, plat principal…)
 
 
 class RecipeCreate(RecipeBase):
@@ -77,6 +95,7 @@ class RecipeSummary(BaseModel):
     image_url: str | None = None
     portions: int | None = None
     note_etoiles: int = 0
+    categorie_plat: str | None = None
 
 
 # --------------------------------------------------------------------------- #
@@ -260,3 +279,45 @@ class DealsScanResponse(BaseModel):
     disponible: bool = True                # False si l'IA n'est pas configurée
     message: str | None = None
     aubaines: list[DealMatch] = Field(default_factory=list)
+
+
+# --------------------------------------------------------------------------- #
+# Réglages clé/valeur
+# --------------------------------------------------------------------------- #
+
+
+class SettingOut(BaseModel):
+    cle: str
+    valeur: str | None = None
+
+
+class SettingIn(BaseModel):
+    valeur: str | None = None
+
+
+# --------------------------------------------------------------------------- #
+# Suggestions de repas — IA
+# --------------------------------------------------------------------------- #
+
+
+class SuggestionsRequest(BaseModel):
+    preferences: str | None = None         # goûts / contraintes (« ma blonde aime… »)
+    nb_repas: int = Field(default=5, ge=1, le=14)
+    type_plat: str | None = None           # filtrer sur un type (ex "Souper")
+    utiliser_mes_recettes: bool = True     # privilégier les recettes déjà enregistrées
+
+
+class MealSuggestion(BaseModel):
+    titre: str
+    type_plat: str | None = None           # déjeuner / souper / dessert…
+    raison: str | None = None              # pourquoi c'est suggéré (pour ta blonde…)
+    recipe_id: int | None = None           # si ça correspond à une recette existante
+    nouvelle_idee: bool = False            # True si c'est une idée à créer (pas en base)
+    ingredients_cles: list[str] = Field(default_factory=list)
+
+
+class SuggestionsResponse(BaseModel):
+    ok: bool = True
+    disponible: bool = True                # False si l'IA n'est pas configurée
+    message: str | None = None
+    suggestions: list[MealSuggestion] = Field(default_factory=list)
