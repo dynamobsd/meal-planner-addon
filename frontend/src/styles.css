@@ -1,0 +1,562 @@
+/* ------------------------------------------------------------------ */
+/* Thème : variables Home Assistant si présentes, sinon fallbacks.     */
+/* ------------------------------------------------------------------ */
+:root {
+  --mp-primary: var(--primary-color, #03a9f4);
+  --mp-primary-text-on: #ffffff;
+  --mp-bg: var(--primary-background-color, #fafafa);
+  --mp-card: var(--card-background-color, #ffffff);
+  --mp-text: var(--primary-text-color, #212121);
+  --mp-text-secondary: var(--secondary-text-color, #727272);
+  --mp-secondary-bg: var(--secondary-background-color, #e5e5e5);
+  --mp-divider: var(--divider-color, #e0e0e0);
+  --mp-danger: var(--error-color, #d32f2f);
+  --mp-star: #f5a623;
+
+  --mp-radius: 14px;
+  --mp-gap: 16px;
+  --mp-nav-h: 64px;
+  --mp-header-h: 56px;
+
+  /* Grande police lisible (environnements lumineux, cuisine). */
+  font-size: 17px;
+  color-scheme: light dark;
+}
+
+/* Repli hors Home Assistant : mode sombre système. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --mp-bg: var(--primary-background-color, #111417);
+    --mp-card: var(--card-background-color, #1c1f24);
+    --mp-text: var(--primary-text-color, #e8e8e8);
+    --mp-text-secondary: var(--secondary-text-color, #9aa0a6);
+    --mp-secondary-bg: var(--secondary-background-color, #2a2e35);
+    --mp-divider: var(--divider-color, #33373d);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--mp-bg);
+  color: var(--mp-text);
+  font-family: var(
+    --paper-font-body1_-_font-family,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif
+  );
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Empêche tout débordement horizontal sur mobile. */
+img,
+input,
+textarea,
+select {
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------------ */
+/* Layout applicatif                                                    */
+/* ------------------------------------------------------------------ */
+.app {
+  min-height: 100vh;
+  /* padding-bottom = hauteur bottom nav + safe area, pour ne rien occulter */
+  padding-bottom: calc(var(--mp-nav-h) + env(safe-area-inset-bottom, 0px));
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: var(--mp-header-h);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  background: var(--mp-card);
+  border-bottom: 1px solid var(--mp-divider);
+}
+
+.header h1 {
+  font-size: 1.15rem;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header .icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--mp-text);
+  font-size: 1.5rem;
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.header .icon-btn:active {
+  background: var(--mp-secondary-bg);
+}
+
+.content {
+  padding: var(--mp-gap);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ------------------------------------------------------------------ */
+/* Boutons                                                              */
+/* ------------------------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border: none;
+  border-radius: var(--mp-radius);
+  background: var(--mp-primary);
+  color: var(--mp-primary-text-on);
+  font-weight: 600;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+}
+
+.btn.secondary {
+  background: var(--mp-secondary-bg);
+  color: var(--mp-text);
+}
+
+.btn.danger {
+  background: var(--mp-danger);
+  color: #fff;
+}
+
+.btn.block {
+  width: 100%;
+}
+
+/* Bouton flottant "+" */
+.fab {
+  position: fixed;
+  right: 18px;
+  bottom: calc(var(--mp-nav-h) + 18px + env(safe-area-inset-bottom, 0px));
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--mp-primary);
+  color: var(--mp-primary-text-on);
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  z-index: 25;
+}
+
+/* ------------------------------------------------------------------ */
+/* Cartes recettes                                                      */
+/* ------------------------------------------------------------------ */
+.recipe-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--mp-gap);
+}
+
+@media (min-width: 520px) {
+  .recipe-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.recipe-card {
+  background: var(--mp-card);
+  border: 1px solid var(--mp-divider);
+  border-radius: var(--mp-radius);
+  overflow: hidden;
+  text-align: left;
+  padding: 0;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+.recipe-card:active {
+  transform: scale(0.99);
+}
+
+.recipe-card .thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--mp-secondary-bg);
+  display: block;
+}
+
+.recipe-card .thumb.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  color: var(--mp-text-secondary);
+}
+
+.recipe-card .card-body {
+  padding: 12px 14px 14px;
+}
+
+.recipe-card .card-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin: 0 0 6px;
+}
+
+/* Étoiles */
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  font-size: 1rem;
+  color: var(--mp-star);
+  letter-spacing: 1px;
+}
+
+.stars .empty {
+  color: var(--mp-divider);
+}
+
+.stars.input span {
+  cursor: pointer;
+  font-size: 1.9rem;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ */
+/* Détail recette                                                       */
+/* ------------------------------------------------------------------ */
+.detail-hero {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--mp-radius);
+  background: var(--mp-secondary-bg);
+}
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  color: var(--mp-text-secondary);
+  margin: 12px 0;
+  font-size: 0.95rem;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  margin: 22px 0 10px;
+}
+
+.ing-group-title {
+  margin: 16px 0 6px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--mp-primary);
+  font-weight: 700;
+}
+
+.ing-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--mp-divider);
+}
+
+.instructions {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.detail-actions .btn {
+  flex: 1;
+}
+
+/* ------------------------------------------------------------------ */
+/* Formulaires                                                          */
+/* ------------------------------------------------------------------ */
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--mp-text-secondary);
+  margin-bottom: 6px;
+}
+
+.field input,
+.field textarea,
+.field select,
+.ing-line input,
+.ing-line select {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--mp-divider);
+  border-radius: 10px;
+  background: var(--mp-card);
+  color: var(--mp-text);
+  font-size: 1rem;
+}
+
+.field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.field-row {
+  display: flex;
+  gap: 12px;
+}
+
+.field-row .field {
+  flex: 1;
+}
+
+/* Lignes d'ingrédients — compactes et tactiles */
+.ing-line {
+  background: var(--mp-card);
+  border: 1px solid var(--mp-divider);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.ing-line .raw-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ing-line .raw-row input {
+  flex: 1;
+}
+
+.ing-line .del-btn {
+  min-width: 44px;
+  min-height: 46px;
+  border: none;
+  border-radius: 10px;
+  background: var(--mp-secondary-bg);
+  color: var(--mp-danger);
+  font-size: 1.2rem;
+}
+
+.ing-line .sub-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ing-line .sub-grid .full {
+  grid-column: 1 / -1;
+}
+
+.ing-line .mini-label {
+  font-size: 0.72rem;
+  color: var(--mp-text-secondary);
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Bandeaux d'état                                                      */
+/* ------------------------------------------------------------------ */
+.notice {
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+
+.notice.error {
+  background: color-mix(in srgb, var(--mp-danger) 15%, transparent);
+  color: var(--mp-danger);
+  border: 1px solid color-mix(in srgb, var(--mp-danger) 40%, transparent);
+}
+
+.notice.info {
+  background: color-mix(in srgb, var(--mp-primary) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mp-primary) 40%, transparent);
+}
+
+.state-center {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--mp-text-secondary);
+}
+
+.state-center .big {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border: 4px solid var(--mp-divider);
+  border-top-color: var(--mp-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 14px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Import : zone URL                                                    */
+/* ------------------------------------------------------------------ */
+.scrape-box {
+  background: var(--mp-card);
+  border: 1px solid var(--mp-divider);
+  border-radius: var(--mp-radius);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.scrape-box .row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.scrape-box .row input {
+  flex: 1;
+}
+
+/* ------------------------------------------------------------------ */
+/* Bottom nav                                                           */
+/* ------------------------------------------------------------------ */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  height: calc(var(--mp-nav-h) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  display: flex;
+  background: var(--mp-card);
+  border-top: 1px solid var(--mp-divider);
+}
+
+.bottom-nav button {
+  flex: 1;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--mp-text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 0.68rem;
+  padding: 6px 2px;
+}
+
+.bottom-nav button .nav-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.bottom-nav button.active {
+  color: var(--mp-primary);
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------------ */
+/* Modale in-app (confirmation) — pas de window.confirm bloquant        */
+/* ------------------------------------------------------------------ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal {
+  background: var(--mp-card);
+  color: var(--mp-text);
+  border-radius: var(--mp-radius);
+  padding: 22px;
+  width: 100%;
+  max-width: 380px;
+}
+
+.modal h3 {
+  margin: 0 0 10px;
+}
+
+.modal p {
+  margin: 0 0 20px;
+  color: var(--mp-text-secondary);
+}
+
+.modal .actions {
+  display: flex;
+  gap: 12px;
+}
+
+.modal .actions .btn {
+  flex: 1;
+}

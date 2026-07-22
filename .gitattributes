@@ -1,0 +1,7 @@
+# Normalisation des fins de ligne
+* text=auto
+
+# Scripts exécutés dans le conteneur Linux : DOIVENT rester en LF
+*.sh    text eol=lf
+run.sh  text eol=lf
+Dockerfile text eol=lf

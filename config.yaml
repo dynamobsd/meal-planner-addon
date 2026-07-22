@@ -1,0 +1,25 @@
+# Métadonnées de l'add-on Home Assistant
+# Doc : https://developers.home-assistant.io/docs/add-ons/configuration
+name: "Planif Repas & Épicerie"
+version: "0.2.0"
+slug: meal_planner
+description: >-
+  Planification de repas hebdomadaire + liste d'épicerie intelligente
+  (scraping de recettes, agrégation par rayon, garde-manger). Mobile-first.
+url: "https://github.com/local/meal-planner-addon"
+# Architectures supportées par les images de base HA
+arch:
+  - aarch64
+  - amd64
+  - armv7
+# --- Ingress : l'app apparaît dans la barre latérale de HA ---
+ingress: true
+ingress_port: 8099           # port interne servi par uvicorn
+panel_icon: mdi:silverware-fork-knife
+panel_title: "Repas"
+# Pas de port exposé publiquement : tout passe par l'ingress HA
+ports: {}
+# /data est persisté par HA entre redémarrages/mises à jour (SQLite y vit)
+map:
+  - addon_config:rw
+init: false
