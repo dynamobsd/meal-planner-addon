@@ -58,6 +58,10 @@ def _run_migrations() -> None:
         }
         if "categorie_plat" not in cols:
             conn.exec_driver_sql("ALTER TABLE recipes ADD COLUMN categorie_plat TEXT")
+        if "favori" not in cols:
+            conn.exec_driver_sql(
+                "ALTER TABLE recipes ADD COLUMN favori INTEGER DEFAULT 0"
+            )
 
 
 def init_db() -> None:

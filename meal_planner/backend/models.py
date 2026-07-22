@@ -41,6 +41,7 @@ class Recipe(Base):
     note_perso: Mapped[str | None] = mapped_column(Text)         # "nos notes"
     note_etoiles: Mapped[int] = mapped_column(Integer, default=0)  # 0..5
     categorie_plat: Mapped[str | None] = mapped_column(Text)      # type de repas (dessert, plat principal…)
+    favori: Mapped[int] = mapped_column(Integer, default=0)       # bool 0/1
     date_ajout: Mapped[str] = mapped_column(Text, default=_utcnow_iso)
 
     ingredients: Mapped[list["Ingredient"]] = relationship(

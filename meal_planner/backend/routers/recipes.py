@@ -40,16 +40,31 @@ def _to_recipe_out(recipe: Recipe, cat_names: dict[int, str]) -> RecipeOut:
 def list_recipes(
     categorie_plat: str | None = None,
     q: str | None = None,
+    favori: bool = False,
     db: Session = Depends(get_db),
 ):
-    """Liste des recettes, filtrable par type de plat et recherche texte."""
+    """Liste des recettes, filtrable par type de plat, recherche texte, favoris."""
     stmt = select(Recipe)
     if categorie_plat:
         stmt = stmt.where(Recipe.categorie_plat == categorie_plat)
     if q:
         stmt = stmt.where(Recipe.titre.ilike(f"%{q.strip()}%"))
+    if favori:
+        stmt = stmt.where(Recipe.favori == 1)
     recipes = db.scalars(stmt.order_by(Recipe.date_ajout.desc())).all()
     return recipes
+
+
+@router.post("/recipes/{recipe_id}/favori", response_model=RecipeSummary)
+def toggle_favori(recipe_id: int, db: Session = Depends(get_db)):
+    """Bascule l'état favori d'une recette."""
+    recipe = db.get(Recipe, recipe_id)
+    if recipe is None:
+        raise HTTPException(status_code=404, detail="Recette introuvable")
+    recipe.favori = 0 if recipe.favori else 1
+    db.commit()
+    db.refresh(recipe)
+    return recipe
 
 
 @router.get("/recipes/{recipe_id}", response_model=RecipeOut)

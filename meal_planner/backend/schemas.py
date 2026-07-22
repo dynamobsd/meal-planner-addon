@@ -69,6 +69,7 @@ class RecipeBase(BaseModel):
     note_perso: str | None = None
     note_etoiles: int = Field(default=0, ge=0, le=5)
     categorie_plat: str | None = None      # type de plat (dessert, plat principal…)
+    favori: int = 0                        # bool 0/1
 
 
 class RecipeCreate(RecipeBase):
@@ -96,6 +97,7 @@ class RecipeSummary(BaseModel):
     portions: int | None = None
     note_etoiles: int = 0
     categorie_plat: str | None = None
+    favori: int = 0
 
 
 # --------------------------------------------------------------------------- #
@@ -321,3 +323,35 @@ class SuggestionsResponse(BaseModel):
     disponible: bool = True                # False si l'IA n'est pas configurée
     message: str | None = None
     suggestions: list[MealSuggestion] = Field(default_factory=list)
+
+
+# --------------------------------------------------------------------------- #
+# Planning automatique (IA) + duplication + export
+# --------------------------------------------------------------------------- #
+
+
+class AutoPlanRequest(BaseModel):
+    semaine: str                           # lundi ISO
+    creneaux: list[str] = Field(default_factory=lambda: ["souper"])  # créneaux à remplir
+    jours: int = Field(default=7, ge=1, le=7)
+    remplacer: bool = False                # vider le planning existant de la semaine d'abord
+    preferences: str | None = None         # sinon lit les préférences enregistrées
+
+
+class AutoPlanResponse(BaseModel):
+    ok: bool = True
+    disponible: bool = True
+    message: str | None = None
+    ajoutes: list[MealPlanOut] = Field(default_factory=list)
+    idees_manquantes: list[MealSuggestion] = Field(default_factory=list)
+
+
+class DuplicateWeekRequest(BaseModel):
+    source_semaine: str                    # lundi ISO source
+    cible_semaine: str                     # lundi ISO destination
+    remplacer: bool = False                # vider la semaine cible d'abord
+
+
+class GroceryExportResponse(BaseModel):
+    semaine: str
+    texte: str                             # liste formatée par rayon, prête à partager

@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models import Category, GroceryItem, Ingredient, MealPlan, Pantry, Recipe
 from ..schemas import (
+    GroceryExportResponse,
     GroceryGenerateRequest,
     GroceryItemOut,
     GroceryManualIn,
@@ -27,6 +28,14 @@ from ..schemas import (
 from ..services.aggregator import aggregate_ingredients
 
 router = APIRouter(tags=["grocery"])
+
+
+def _fmt_qte(item: GroceryItemOut) -> str:
+    if item.quantite_totale is None:
+        return ""
+    q = item.quantite_totale
+    q_str = str(int(q)) if float(q).is_integer() else f"{q:g}"
+    return f"{q_str} {item.unite}".strip() if item.unite else q_str
 
 
 def _category_maps(db: Session):
@@ -67,6 +76,25 @@ def _grouped(db: Session, semaine: str) -> list[GroceryRayon]:
 @router.get("/grocery", response_model=list[GroceryRayon])
 def get_list(semaine: str, db: Session = Depends(get_db)):
     return _grouped(db, semaine)
+
+
+@router.get("/grocery/export", response_model=GroceryExportResponse)
+def export_list(semaine: str, db: Session = Depends(get_db)):
+    """Liste d'épicerie en texte brut, groupée par rayon (pour partage/copie)."""
+    rayons = _grouped(db, semaine)
+    lignes = [f"🛒 Liste d'épicerie — semaine du {semaine}", ""]
+    for ray in rayons:
+        actifs = [it for it in ray.items if not it.coche]
+        if not actifs:
+            continue
+        lignes.append(f"— {ray.categorie_nom} —")
+        for it in actifs:
+            qte = _fmt_qte(it)
+            lignes.append(f"• {it.nom}" + (f" : {qte}" if qte else ""))
+        lignes.append("")
+    if len(lignes) <= 2:
+        lignes.append("(liste vide)")
+    return GroceryExportResponse(semaine=semaine, texte="\n".join(lignes).strip())
 
 
 @router.post("/grocery/generate", response_model=list[GroceryRayon])
