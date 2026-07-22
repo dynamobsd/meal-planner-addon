@@ -1,7 +1,7 @@
-# Image de base : python:3.12-slim (garantie multi-arch amd64/arm64, sans
-# dépendance à un tag d'image de base HA introuvable). HA passe BUILD_FROM
-# depuis build.yaml.
-ARG BUILD_FROM=python:3.12-slim
+# Base FIGÉE en dur (python:3.12-slim, manifeste multi-arch officiel amd64/arm64).
+# On n'utilise PAS `ARG BUILD_FROM` : Home Assistant injecte sinon
+# --build-arg BUILD_FROM=ghcr.io/home-assistant/base:latest (Alpine, sans pip)
+# et écraserait notre base. En figeant le FROM, ce build-arg est ignoré.
 
 # ---------- Étape 1 : build du frontend React/Vite ----------
 FROM node:20-alpine AS frontend
@@ -12,7 +12,7 @@ COPY frontend/ ./
 RUN npm run build          # produit /app/dist (chemins relatifs, base: './')
 
 # ---------- Étape 2 : image finale add-on ----------
-FROM ${BUILD_FROM}
+FROM python:3.12-slim
 
 WORKDIR /app
 COPY backend/requirements.txt ./
