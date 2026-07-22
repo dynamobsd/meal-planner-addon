@@ -1026,3 +1026,138 @@ button {
   font-size: 0.85rem;
   color: var(--mp-text-secondary);
 }
+
+/* ------------------------------------------------------------------ */
+/* Phase 8 — type de plat, recherche, chips, suggestions                */
+/* ------------------------------------------------------------------ */
+
+/* Badge « type de plat » (détail + cartes + suggestions) */
+.type-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mp-primary) 16%, transparent);
+  color: var(--mp-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.type-badge.small {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  margin-bottom: 6px;
+}
+
+.detail-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Barre de recherche (liste recettes) */
+.search-bar {
+  margin-bottom: 12px;
+}
+
+.search-bar input {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--mp-divider);
+  border-radius: var(--mp-radius);
+  background: var(--mp-card);
+  color: var(--mp-text);
+  font-size: 1rem;
+}
+
+/* Bande de chips défilable horizontalement DANS son conteneur (pas la page) */
+.chips-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 16px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--mp-divider);
+  border-radius: 999px;
+  background: var(--mp-card);
+  color: var(--mp-text);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.chip.active {
+  background: var(--mp-primary);
+  color: var(--mp-primary-text-on);
+  border-color: var(--mp-primary);
+  font-weight: 600;
+}
+
+/* Planning : bande d'action (bouton Suggestions) */
+.planning-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+/* Case à cocher tactile (suggestions) */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  font-size: 1rem;
+}
+
+.checkbox-row input[type='checkbox'] {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  accent-color: var(--mp-primary);
+}
+
+/* Badges de suggestion */
+.sugg-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.sugg-badge.existing {
+  background: color-mix(in srgb, #2e7d32 18%, transparent);
+  color: #2e7d32;
+}
+
+.sugg-badge.new {
+  background: color-mix(in srgb, var(--mp-star) 20%, transparent);
+  color: var(--mp-star);
+}
+
+.sugg-ingredients {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.ing-chip {
+  padding: 3px 10px;
+  border-radius: 8px;
+  background: var(--mp-secondary-bg);
+  font-size: 0.82rem;
+}

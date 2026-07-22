@@ -1,7 +1,9 @@
-// Liste des recettes (grille de cartes mobile-first).
+// Liste des recettes (grille de cartes mobile-first) avec recherche plein-texte
+// et filtre par type de plat (chips défilables horizontalement DANS leur bande).
 import { useEffect, useState } from 'react';
 import { listRecipes, ApiError } from '../api/client';
 import type { RecipeSummary } from '../api/types';
+import { useTypesPlat } from '../utils/useTypesPlat';
 import { StarRating } from '../components/StarRating';
 
 interface Props {
@@ -14,11 +16,26 @@ export function RecipesView({ reloadKey, onOpen, onCreate }: Props) {
   const [recipes, setRecipes] = useState<RecipeSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [q, setQ] = useState('');
+  const [debouncedQ, setDebouncedQ] = useState('');
+  const [filterType, setFilterType] = useState<string>(''); // '' = tous
+  const typesPlat = useTypesPlat();
+
+  // Débounce de la recherche pour limiter les appels réseau.
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQ(q.trim()), 300);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  // (Re)chargement à chaque changement de filtre, recherche, ou reloadKey.
   useEffect(() => {
     let alive = true;
     setError(null);
     setRecipes(null);
-    listRecipes()
+    listRecipes({
+      categorie_plat: filterType || undefined,
+      q: debouncedQ || undefined,
+    })
       .then((data) => alive && setRecipes(data))
       .catch((e: unknown) => {
         if (!alive) return;
@@ -27,10 +44,40 @@ export function RecipesView({ reloadKey, onOpen, onCreate }: Props) {
     return () => {
       alive = false;
     };
-  }, [reloadKey]);
+  }, [reloadKey, debouncedQ, filterType]);
 
   return (
     <div>
+      {/* Recherche */}
+      <div className="search-bar">
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="🔍 Rechercher une recette…"
+          aria-label="Rechercher une recette"
+          inputMode="search"
+        />
+      </div>
+
+      {/* Filtre par type de plat (chips) */}
+      <div className="chips-scroll" role="tablist" aria-label="Filtrer par type">
+        <button
+          className={`chip${filterType === '' ? ' active' : ''}`}
+          onClick={() => setFilterType('')}
+        >
+          Tous
+        </button>
+        {typesPlat.map((t) => (
+          <button
+            key={t}
+            className={`chip${filterType === t ? ' active' : ''}`}
+            onClick={() => setFilterType(filterType === t ? '' : t)}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+
       {error && <div className="notice error">{error}</div>}
 
       {!recipes && !error && (
@@ -46,7 +93,11 @@ export function RecipesView({ reloadKey, onOpen, onCreate }: Props) {
             🍳
           </div>
           <h2 style={{ margin: '0 0 8px' }}>Aucune recette</h2>
-          <p>Ajoute ta première recette avec le bouton +.</p>
+          <p>
+            {debouncedQ || filterType
+              ? 'Aucun résultat pour ce filtre.'
+              : 'Ajoute ta première recette avec le bouton +.'}
+          </p>
         </div>
       )}
 
@@ -72,6 +123,9 @@ export function RecipesView({ reloadKey, onOpen, onCreate }: Props) {
               )}
               <div className="card-body">
                 <div className="card-title">{r.titre}</div>
+                {r.categorie_plat && (
+                  <span className="type-badge small">{r.categorie_plat}</span>
+                )}
                 <StarRating value={r.note_etoiles} />
               </div>
             </button>

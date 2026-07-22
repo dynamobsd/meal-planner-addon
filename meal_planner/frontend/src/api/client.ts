@@ -10,10 +10,13 @@ import type {
   MealPlanOut,
   MealType,
   PantryOut,
+  PreferencesGouts,
   RecipeInput,
   RecipeOut,
   RecipeSummary,
   ScrapeResult,
+  SuggestionsResponse,
+  SuggestionsStatus,
 } from './types';
 
 // Base de l'API résolue dynamiquement contre <base href>.
@@ -50,9 +53,22 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 // Recettes
 // --------------------------------------------------------------------------- //
 
-export const listRecipes = () => request<RecipeSummary[]>('recipes');
+// Liste des recettes, avec filtres optionnels par type de plat et recherche.
+export const listRecipes = (filters?: {
+  categorie_plat?: string;
+  q?: string;
+}) => {
+  const params = new URLSearchParams();
+  if (filters?.categorie_plat) params.set('categorie_plat', filters.categorie_plat);
+  if (filters?.q) params.set('q', filters.q);
+  const qs = params.toString();
+  return request<RecipeSummary[]>(`recipes${qs ? `?${qs}` : ''}`);
+};
 
 export const getRecipe = (id: number) => request<RecipeOut>(`recipes/${id}`);
+
+/** Liste des types de plat (Déjeuner, Souper, Dessert…) pour peupler les selects. */
+export const getTypesPlat = () => request<string[]>('types-plat');
 
 export const createRecipe = (body: RecipeInput) =>
   request<RecipeOut>('recipes', {
@@ -238,6 +254,34 @@ export const scanDeals = (body: {
   magasin?: string;
 }) =>
   request<DealsScanResponse>('deals/scan', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+
+// --------------------------------------------------------------------------- //
+// Suggestions de repas (IA) — Phase 8
+// --------------------------------------------------------------------------- //
+
+export const getSuggestionsStatus = () =>
+  request<SuggestionsStatus>('suggestions/status');
+
+/** Préférences/goûts persistées (ex : « ma blonde déteste les champignons »). */
+export const getPreferencesGouts = () =>
+  request<PreferencesGouts>('settings/preferences_gouts');
+
+export const savePreferencesGouts = (valeur: string) =>
+  request<PreferencesGouts>('settings/preferences_gouts', {
+    method: 'PUT',
+    body: JSON.stringify({ valeur }),
+  });
+
+export const suggestMeals = (body: {
+  preferences?: string;
+  nb_repas: number;
+  type_plat?: string;
+  utiliser_mes_recettes: boolean;
+}) =>
+  request<SuggestionsResponse>('suggestions/meals', {
     method: 'POST',
     body: JSON.stringify(body),
   });

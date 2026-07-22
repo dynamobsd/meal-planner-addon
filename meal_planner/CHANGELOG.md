@@ -1,5 +1,16 @@
 # Journal des versions
 
+## 0.3.0
+
+- **Type de plat sur les recettes** : classe chaque recette (déjeuner, dessert, plat principal, entrée, accompagnement, soupe, salade, collation, boisson…). Recherche par texte et **filtre par type** dans la liste des recettes et dans le sélecteur du planning.
+- **Suggestions de repas (IA)** : depuis le Planning, l'IA propose des idées de repas personnalisées selon vos goûts (« pour ma blonde »), en priorisant vos recettes déjà enregistrées et en suggérant des idées neuves sinon. Un simple bouton crée la recette d'une idée. Option `anthropic_api_key` (désactivé si vide).
+- **Préférences de goûts persistées** : vos préférences sont mémorisées, pas besoin de les retaper.
+- Migration transparente de la base existante (aucune perte de données).
+
+## 0.2.6
+
+- Corrections d'empaquetage Home Assistant : image de base `python:3.12-slim`, chargement des librairies et profil de sécurité ajustés pour un démarrage fiable de l'add-on.
+
 ## 0.2.0
 
 Première version fonctionnelle complète (Phases 1 à 5 + Alerte aubaines).

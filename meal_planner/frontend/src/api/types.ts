@@ -7,6 +7,7 @@ export interface RecipeSummary {
   image_url?: string | null;
   portions?: number | null;
   note_etoiles: number;
+  categorie_plat?: string | null;
 }
 
 // Ingrédient tel que renvoyé par l'API (Out) ou fourni dans un brouillon (Draft).
@@ -33,6 +34,7 @@ export interface RecipeOut {
   instructions?: string | null;
   note_perso?: string | null;
   note_etoiles: number;
+  categorie_plat?: string | null;
   date_ajout: string;
   ingredients: Ingredient[];
 }
@@ -54,6 +56,7 @@ export interface RecipeInput {
   instructions: string | null;
   note_perso: string | null;
   note_etoiles: number;
+  categorie_plat: string | null;
   ingredients: Array<{
     texte_brut: string;
     nom_normalise: string;
@@ -166,4 +169,33 @@ export interface DealsScanResponse {
   disponible: boolean;
   message?: string | null;
   aubaines: DealMatch[];
+}
+
+// --------------------------------------------------------------------------- //
+// Suggestions de repas (IA) — Phase 8
+// --------------------------------------------------------------------------- //
+
+export interface SuggestionsStatus {
+  disponible: boolean;
+}
+
+export interface PreferencesGouts {
+  cle: string;
+  valeur: string | null;
+}
+
+export interface MealSuggestion {
+  titre: string;
+  type_plat?: string | null;
+  raison?: string | null;
+  recipe_id?: number | null;
+  nouvelle_idee: boolean;
+  ingredients_cles: string[];
+}
+
+export interface SuggestionsResponse {
+  ok: boolean;
+  disponible: boolean;
+  message?: string | null;
+  suggestions: MealSuggestion[];
 }

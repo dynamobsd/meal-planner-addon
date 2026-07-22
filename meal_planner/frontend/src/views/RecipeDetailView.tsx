@@ -87,7 +87,12 @@ export function RecipeDetailView({ id, onBack, onEdit, onDeleted }: Props) {
       <h1 style={{ margin: '16px 0 8px', fontSize: '1.5rem' }}>
         {recipe.titre}
       </h1>
-      <StarRating value={recipe.note_etoiles} />
+      <div className="detail-rating-row">
+        <StarRating value={recipe.note_etoiles} />
+        {recipe.categorie_plat && (
+          <span className="type-badge">{recipe.categorie_plat}</span>
+        )}
+      </div>
 
       {meta.length > 0 && (
         <div className="meta-row">

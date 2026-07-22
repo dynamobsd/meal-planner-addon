@@ -21,6 +21,7 @@ import {
   weekLabel,
 } from '../utils/date';
 import { RecipePicker } from '../components/RecipePicker';
+import { SuggestionsView } from './SuggestionsView';
 
 const CRENEAUX: { type: MealType; label: string }[] = [
   { type: 'dejeuner', label: 'Déjeuner' },
@@ -29,13 +30,23 @@ const CRENEAUX: { type: MealType; label: string }[] = [
   { type: 'collation', label: 'Collation' },
 ];
 
-export function PlanningView() {
+interface Props {
+  // Navigation vers l'onglet Recettes (gérée par App) depuis les suggestions.
+  onOpenRecipe: (id: number) => void;
+  onCreateRecipe: (prefill: {
+    titre: string;
+    categorie_plat?: string | null;
+  }) => void;
+}
+
+export function PlanningView({ onOpenRecipe, onCreateRecipe }: Props) {
   const [monday, setMonday] = useState<Date>(() => mondayOf(new Date()));
   const [meals, setMeals] = useState<MealPlanOut[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [picker, setPicker] = useState<{ date: string; type: MealType } | null>(
     null,
   );
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const start = toISODate(monday);
 
@@ -95,8 +106,29 @@ export function PlanningView() {
     }
   };
 
+  // Sous-écran Suggestions (IA), ouvert depuis le bouton du header planning.
+  if (showSuggestions) {
+    return (
+      <SuggestionsView
+        onBack={() => setShowSuggestions(false)}
+        onOpenRecipe={onOpenRecipe}
+        onCreateRecipe={onCreateRecipe}
+      />
+    );
+  }
+
   return (
     <div>
+      {/* Barre d'action du planning : accès aux suggestions IA */}
+      <div className="planning-top">
+        <button
+          className="btn secondary"
+          onClick={() => setShowSuggestions(true)}
+        >
+          💡 Suggestions
+        </button>
+      </div>
+
       {/* Navigation de semaine */}
       <div className="week-nav">
         <button

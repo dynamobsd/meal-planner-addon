@@ -5,11 +5,15 @@ import { useState } from 'react';
 import { createRecipe, scrapeRecipe, ApiError } from '../api/client';
 import type { Category } from '../api/types';
 import { RecipeForm, RecipeFormValues, valuesFrom } from '../components/RecipeForm';
+import type { ImportPrefill } from '../App';
 
 interface Props {
   categories: Category[];
   onSaved: () => void; // recette créée -> retour liste
   onCancel: () => void;
+  // Pré-remplissage (venu d'une suggestion IA « nouvelle idée ») : on saute
+  // directement au formulaire manuel pré-rempli.
+  prefill?: ImportPrefill;
 }
 
 // Étape de l'écran : soit la zone URL, soit le formulaire (pré-rempli ou vide).
@@ -17,11 +21,15 @@ type Step =
   | { kind: 'url' }
   | { kind: 'form'; values: RecipeFormValues; info?: string | null };
 
-export function ImportView({ categories, onSaved, onCancel }: Props) {
+export function ImportView({ categories, onSaved, onCancel, prefill }: Props) {
   const [url, setUrl] = useState('');
   const [scraping, setScraping] = useState(false);
   const [scrapeErr, setScrapeErr] = useState<string | null>(null);
-  const [step, setStep] = useState<Step>({ kind: 'url' });
+  const [step, setStep] = useState<Step>(
+    prefill
+      ? { kind: 'form', values: valuesFrom(prefill) }
+      : { kind: 'url' },
+  );
 
   const [saving, setSaving] = useState(false);
   const [saveErr, setSaveErr] = useState<string | null>(null);

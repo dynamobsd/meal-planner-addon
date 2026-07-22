@@ -13,11 +13,17 @@ import { SettingsView } from './views/SettingsView';
 import { listCategories } from './api/client';
 import type { Category, RecipeOut } from './api/types';
 
+// Pré-remplissage optionnel du formulaire d'import (venu des suggestions IA).
+export interface ImportPrefill {
+  titre?: string;
+  categorie_plat?: string | null;
+}
+
 // Écran courant à l'intérieur de l'onglet "Recettes".
 type Screen =
   | { name: 'list' }
   | { name: 'detail'; id: number }
-  | { name: 'import' }
+  | { name: 'import'; prefill?: ImportPrefill }
   | { name: 'edit'; recipe: RecipeOut };
 
 export default function App() {
@@ -95,6 +101,7 @@ export default function App() {
         return (
           <ImportView
             categories={categories}
+            prefill={screen.prefill}
             onSaved={() => {
               setReloadKey((k) => k + 1);
               goList();
@@ -122,7 +129,20 @@ export default function App() {
       case 'recettes':
         return renderRecettes();
       case 'planning':
-        return <PlanningView />;
+        return (
+          <PlanningView
+            // Depuis les suggestions IA : ouvrir une recette existante…
+            onOpenRecipe={(id) => {
+              setTab('recettes');
+              setScreen({ name: 'detail', id });
+            }}
+            // …ou créer une recette pré-remplie (nouvelle idée).
+            onCreateRecipe={(prefill) => {
+              setTab('recettes');
+              setScreen({ name: 'import', prefill });
+            }}
+          />
+        );
       case 'epicerie':
         return <GroceryView />;
       case 'garde-manger':

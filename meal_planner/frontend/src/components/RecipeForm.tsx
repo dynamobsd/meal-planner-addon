@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { Category, Ingredient, RecipeInput } from '../api/types';
 import { learnCategory } from '../api/client';
+import { useTypesPlat } from '../utils/useTypesPlat';
 import { StarRating } from './StarRating';
 
 // ---- État interne : les nombres sont saisis en chaînes puis convertis. ----
@@ -26,6 +27,7 @@ export interface RecipeFormValues {
   instructions: string;
   note_perso: string;
   note_etoiles: number;
+  categorie_plat: string;
   ingredients: IngredientRow[];
 }
 
@@ -55,6 +57,7 @@ export function valuesFrom(source: {
   instructions?: string | null;
   note_perso?: string | null;
   note_etoiles?: number;
+  categorie_plat?: string | null;
   ingredients?: Partial<Ingredient>[];
 }): RecipeFormValues {
   return {
@@ -68,6 +71,7 @@ export function valuesFrom(source: {
     instructions: source.instructions ?? '',
     note_perso: source.note_perso ?? '',
     note_etoiles: source.note_etoiles ?? 0,
+    categorie_plat: source.categorie_plat ?? '',
     ingredients: (source.ingredients ?? []).map(toRow),
   };
 }
@@ -90,6 +94,7 @@ function toRecipeInput(v: RecipeFormValues): RecipeInput {
     instructions: v.instructions.trim() || null,
     note_perso: v.note_perso.trim() || null,
     note_etoiles: v.note_etoiles,
+    categorie_plat: v.categorie_plat.trim() || null,
     ingredients: v.ingredients
       .filter((r) => r.texte_brut.trim() !== '')
       .map((r) => ({
@@ -124,6 +129,7 @@ export function RecipeForm({
 }: Props) {
   const [v, setV] = useState<RecipeFormValues>(initial);
   const [touched, setTouched] = useState(false);
+  const typesPlat = useTypesPlat();
 
   const patch = (p: Partial<RecipeFormValues>) => setV((cur) => ({ ...cur, ...p }));
 
@@ -181,6 +187,22 @@ export function RecipeForm({
             Le titre est obligatoire.
           </div>
         )}
+      </div>
+
+      <div className="field">
+        <label htmlFor="f-type-plat">Type de plat</label>
+        <select
+          id="f-type-plat"
+          value={v.categorie_plat}
+          onChange={(e) => patch({ categorie_plat: e.target.value })}
+        >
+          <option value="">— Non classé —</option>
+          {typesPlat.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="field">

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { listRecipes, ApiError } from '../api/client';
 import type { RecipeSummary } from '../api/types';
+import { useTypesPlat } from '../utils/useTypesPlat';
 
 interface Props {
   title: string;
@@ -14,6 +15,8 @@ export function RecipePicker({ title, onPick, onClose }: Props) {
   const [recipes, setRecipes] = useState<RecipeSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [q, setQ] = useState('');
+  const [filterType, setFilterType] = useState<string>(''); // '' = tous
+  const typesPlat = useTypesPlat();
 
   useEffect(() => {
     let alive = true;
@@ -28,12 +31,16 @@ export function RecipePicker({ title, onPick, onClose }: Props) {
     };
   }, []);
 
+  // Filtrage client (texte + type de plat) sur la liste déjà chargée.
   const filtered = useMemo(() => {
     if (!recipes) return [];
     const term = q.trim().toLowerCase();
-    if (!term) return recipes;
-    return recipes.filter((r) => r.titre.toLowerCase().includes(term));
-  }, [recipes, q]);
+    return recipes.filter(
+      (r) =>
+        (term === '' || r.titre.toLowerCase().includes(term)) &&
+        (filterType === '' || r.categorie_plat === filterType),
+    );
+  }, [recipes, q, filterType]);
 
   return (
     <div className="modal-overlay" onClick={onClose} role="presentation">
@@ -52,6 +59,25 @@ export function RecipePicker({ title, onPick, onClose }: Props) {
           placeholder="Rechercher une recette…"
           autoFocus
         />
+
+        {/* Filtre par type de plat (ex : choisir « un dessert ») */}
+        <div className="chips-scroll" aria-label="Filtrer par type">
+          <button
+            className={`chip${filterType === '' ? ' active' : ''}`}
+            onClick={() => setFilterType('')}
+          >
+            Tous
+          </button>
+          {typesPlat.map((t) => (
+            <button
+              key={t}
+              className={`chip${filterType === t ? ' active' : ''}`}
+              onClick={() => setFilterType(filterType === t ? '' : t)}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
 
         {error && <div className="notice error">{error}</div>}
         {!recipes && !error && (
