@@ -14,13 +14,16 @@ RUN npm run build          # produit /app/dist (chemins relatifs, base: './')
 # ---------- Étape 2 : image finale add-on ----------
 FROM python:3.12-slim
 
-# Le loader dynamique doit trouver libpython3.12.so.1.0 (dans /usr/local/lib).
-# Sous le runtime HA, /etc/ld.so.cache n'est pas toujours consulté -> sans ça :
+# libpython3.12.so.1.0 est dans /usr/local/lib, mais le runtime HA ne le
+# trouve pas (ni via LD_LIBRARY_PATH ni via le cache) -> crash au démarrage :
 # « python: error while loading shared libraries: libpython3.12.so.1.0 ».
-# Triple ceinture : config permanente du loader + cache + variable d'env.
-# (run.sh re-force aussi LD_LIBRARY_PATH au démarrage.)
+# Solution qui ne dépend d'AUCUNE variable d'env : on expose la lib dans
+# /usr/lib (chemin TOUJOURS cherché en dur par le loader glibc), + cache + env.
 ENV LD_LIBRARY_PATH=/usr/local/lib
-RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/usr-local-lib.conf && ldconfig
+RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/usr-local-lib.conf \
+    && ln -sf /usr/local/lib/libpython3.12.so.1.0 /usr/lib/libpython3.12.so.1.0 \
+    && ldconfig \
+    && env -i /usr/local/bin/python3 -c "import sys; print('AUTO-TEST libpython OK', sys.version.split()[0])"
 
 WORKDIR /app
 COPY backend/requirements.txt ./
