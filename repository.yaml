@@ -1,0 +1,5 @@
+# Métadonnées du dépôt d'add-ons Home Assistant
+# Doc : https://developers.home-assistant.io/docs/add-ons/repository
+name: "Planif Repas & Épicerie"
+url: "https://github.com/dynamobsd/meal-planner-addon"
+maintainer: "dynamobsd <brossard.dynamo@gmail.com>"

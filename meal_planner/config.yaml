@@ -23,3 +23,9 @@ ports: {}
 map:
   - addon_config:rw
 init: false
+# Options configurables par l'utilisateur dans l'UI de l'add-on
+options:
+  anthropic_api_key: ""
+schema:
+  # Clé API Anthropic pour l'« Alerte aubaines » (optionnel ; vide = feature désactivée)
+  anthropic_api_key: password?

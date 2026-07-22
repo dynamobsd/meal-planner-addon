@@ -6,7 +6,10 @@ import { RecipesView } from './views/RecipesView';
 import { RecipeDetailView } from './views/RecipeDetailView';
 import { ImportView } from './views/ImportView';
 import { EditView } from './views/EditView';
-import { Placeholder } from './views/Placeholder';
+import { PlanningView } from './views/PlanningView';
+import { GroceryView } from './views/GroceryView';
+import { PantryView } from './views/PantryView';
+import { SettingsView } from './views/SettingsView';
 import { listCategories } from './api/client';
 import type { Category, RecipeOut } from './api/types';
 
@@ -119,17 +122,13 @@ export default function App() {
       case 'recettes':
         return renderRecettes();
       case 'planning':
-        return (
-          <Placeholder icon="📅" title="Planning des repas" phase="Phase 3" />
-        );
+        return <PlanningView />;
       case 'epicerie':
-        return (
-          <Placeholder icon="🛒" title="Liste d'épicerie" phase="Phase 4" />
-        );
+        return <GroceryView />;
       case 'garde-manger':
-        return <Placeholder icon="🥫" title="Garde-manger" phase="Phase 5" />;
+        return <PantryView />;
       case 'reglages':
-        return <Placeholder icon="⚙️" title="Réglages" phase="Phase 5" />;
+        return <SettingsView />;
     }
   };
 

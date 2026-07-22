@@ -560,3 +560,469 @@ button {
 .modal .actions .btn {
   flex: 1;
 }
+
+/* ------------------------------------------------------------------ */
+/* Navigation de semaine (planning + épicerie)                          */
+/* ------------------------------------------------------------------ */
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.week-nav .icon-btn {
+  background: var(--mp-secondary-bg);
+  border: none;
+  color: var(--mp-text);
+  font-size: 1.6rem;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 12px;
+}
+
+.week-label {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Planning — liste jour par jour                                       */
+/* ------------------------------------------------------------------ */
+.day-card {
+  background: var(--mp-card);
+  border: 1px solid var(--mp-divider);
+  border-radius: var(--mp-radius);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.day-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  border-bottom: 1px solid var(--mp-divider);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.day-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.day-date {
+  color: var(--mp-text-secondary);
+  font-size: 0.9rem;
+}
+
+.slot {
+  padding: 6px 0;
+}
+
+.slot-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.slot-label {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--mp-text-secondary);
+  font-weight: 700;
+}
+
+.slot-add {
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: var(--mp-secondary-bg);
+  color: var(--mp-primary);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.meal-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--mp-secondary-bg);
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-top: 8px;
+}
+
+.meal-chip-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.meal-title {
+  display: block;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: var(--mp-text-secondary);
+}
+
+.portions input {
+  width: 64px;
+  min-height: 40px;
+  padding: 4px 8px;
+  border: 1px solid var(--mp-divider);
+  border-radius: 8px;
+  background: var(--mp-card);
+  color: var(--mp-text);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ */
+/* Sélecteur de recette (overlay)                                       */
+/* ------------------------------------------------------------------ */
+.modal.picker {
+  max-width: 440px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.picker-search {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--mp-divider);
+  border-radius: 10px;
+  background: var(--mp-card);
+  color: var(--mp-text);
+  margin-bottom: 12px;
+}
+
+.picker-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px;
+  border: none;
+  border-bottom: 1px solid var(--mp-divider);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.picker-item img,
+.picker-item .picker-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--mp-secondary-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.picker-title {
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ */
+/* Épicerie                                                             */
+/* ------------------------------------------------------------------ */
+.offline-banner {
+  background: color-mix(in srgb, var(--mp-star) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mp-star) 45%, transparent);
+  color: var(--mp-text);
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.grocery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.grocery-actions .btn {
+  flex: 1;
+  min-width: 140px;
+}
+
+/* En-tête de rayon collant sous le header sticky */
+.rayon-head {
+  position: sticky;
+  top: var(--mp-header-h);
+  z-index: 10;
+  margin: 0 -16px 6px;
+  padding: 8px 16px;
+  background: var(--mp-secondary-bg);
+  color: var(--mp-text);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.grocery-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 2px;
+  border-bottom: 1px solid var(--mp-divider);
+}
+
+.grocery-item .check {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  border: 2px solid var(--mp-primary);
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* zone tactile élargie sans agrandir le visuel */
+  padding: 0;
+}
+
+/* Cible tactile >= 44px via pseudo-élément */
+.grocery-item .check::before {
+  content: '';
+  position: absolute;
+  width: 44px;
+  height: 44px;
+}
+
+.grocery-item .check {
+  position: relative;
+}
+
+.grocery-item.checked .check {
+  background: var(--mp-primary);
+}
+
+.grocery-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.grocery-name {
+  font-weight: 600;
+}
+
+.grocery-qty {
+  font-size: 0.85rem;
+  color: var(--mp-text-secondary);
+}
+
+.grocery-item.checked .grocery-name {
+  text-decoration: line-through;
+  color: var(--mp-text-secondary);
+}
+
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--mp-secondary-bg);
+  font-size: 0.7rem;
+  vertical-align: middle;
+}
+
+.warn-badge {
+  font-size: 0.78rem;
+  color: var(--mp-star);
+}
+
+.grocery-item-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.mini-action {
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: var(--mp-secondary-bg);
+  color: var(--mp-text);
+  font-size: 1.1rem;
+}
+
+.mini-action.danger {
+  color: var(--mp-danger);
+}
+
+.mini-action.save {
+  color: var(--mp-primary);
+}
+
+.mini-action:disabled {
+  opacity: 0.4;
+}
+
+/* ------------------------------------------------------------------ */
+/* Garde-manger                                                         */
+/* ------------------------------------------------------------------ */
+.pantry-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--mp-divider);
+}
+
+.pantry-row input {
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--mp-divider);
+  border-radius: 8px;
+  background: var(--mp-card);
+  color: var(--mp-text);
+}
+
+.pantry-nom {
+  flex: 1;
+  min-width: 0;
+}
+
+.pantry-qte {
+  width: 64px;
+}
+
+.pantry-unite {
+  width: 68px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Réglages — rayons                                                    */
+/* ------------------------------------------------------------------ */
+.cat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--mp-divider);
+}
+
+.cat-order {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cat-order .mini-action {
+  min-height: 30px;
+  min-width: 40px;
+  font-size: 1rem;
+  padding: 0;
+}
+
+.cat-nom {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--mp-divider);
+  border-radius: 8px;
+  background: var(--mp-card);
+  color: var(--mp-text);
+}
+
+/* ------------------------------------------------------------------ */
+/* Aubaines                                                             */
+/* ------------------------------------------------------------------ */
+.deal-card {
+  background: var(--mp-card);
+  border: 1px solid var(--mp-divider);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.deal-card.highlight {
+  border-color: var(--mp-primary);
+  background: color-mix(in srgb, var(--mp-primary) 8%, var(--mp-card));
+}
+
+.deal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.deal-produit {
+  font-weight: 700;
+}
+
+.deal-badge {
+  background: var(--mp-primary);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.deal-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.deal-prix {
+  font-weight: 600;
+}
+
+.deal-rabais {
+  color: var(--mp-danger);
+  font-weight: 600;
+}
+
+.deal-lien {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--mp-primary);
+}
+
+.deal-note {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: var(--mp-text-secondary);
+}

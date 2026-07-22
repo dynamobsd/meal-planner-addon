@@ -16,7 +16,15 @@ from fastapi.staticfiles import StaticFiles
 
 from .config import FRONTEND_DIST
 from .database import init_db
-from .routers import categories, import_, recipes
+from .routers import (
+    categories,
+    deals,
+    grocery,
+    import_,
+    meal_plan,
+    pantry,
+    recipes,
+)
 
 
 @asynccontextmanager
@@ -38,6 +46,10 @@ app = FastAPI(
 app.include_router(recipes.router, prefix="/api")
 app.include_router(import_.router, prefix="/api")
 app.include_router(categories.router, prefix="/api")
+app.include_router(meal_plan.router, prefix="/api")
+app.include_router(pantry.router, prefix="/api")
+app.include_router(grocery.router, prefix="/api")
+app.include_router(deals.router, prefix="/api")
 
 
 @app.get("/api/health")

@@ -1,23 +1,20 @@
 # Python
-__pycache__/
+**/__pycache__/
 *.py[cod]
 .venv/
 venv/
 *.egg-info/
 .pytest_cache/
 
-# Base de données runtime + volume /data
-data/*.db
-data/*.db-wal
-data/*.db-shm
-backend/tests/*.db
-backend/tests/*.db-wal
-backend/tests/*.db-shm
+# Bases de données runtime + volume /data (récursif quel que soit l'emplacement)
+**/*.db
+**/*.db-wal
+**/*.db-shm
 
 # Frontend
-frontend/node_modules/
-frontend/dist/
-frontend_dist/
+**/node_modules/
+**/dist/
+**/frontend_dist/
 
 # Divers
 .DS_Store

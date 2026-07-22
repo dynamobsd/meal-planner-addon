@@ -91,3 +91,79 @@ export interface ScrapeError {
 }
 
 export type ScrapeResult = ScrapeSuccess | ScrapeError;
+
+// --------------------------------------------------------------------------- //
+// Planning (Phase 3)
+// --------------------------------------------------------------------------- //
+
+export type MealType = 'dejeuner' | 'diner' | 'souper' | 'collation';
+
+export interface MealPlanOut {
+  id: number;
+  date: string; // YYYY-MM-DD
+  type_repas: MealType;
+  recipe_id: number;
+  portions_planifiees?: number | null;
+  recette_titre?: string | null;
+  recette_image?: string | null;
+  recette_portions?: number | null;
+}
+
+// --------------------------------------------------------------------------- //
+// Épicerie (Phase 4)
+// --------------------------------------------------------------------------- //
+
+export interface GroceryItemOut {
+  id: number;
+  semaine: string;
+  nom: string;
+  quantite_totale?: number | null;
+  unite?: string | null;
+  categorie_id?: number | null;
+  coche: number; // 0 | 1
+  source: 'auto' | 'manuel';
+  avertissement?: string | null;
+  categorie_nom?: string | null;
+}
+
+export interface GroceryRayon {
+  categorie_id: number | null;
+  categorie_nom: string;
+  ordre_tri: number;
+  items: GroceryItemOut[];
+}
+
+// --------------------------------------------------------------------------- //
+// Garde-manger (Phase 4)
+// --------------------------------------------------------------------------- //
+
+export interface PantryOut {
+  id: number;
+  nom_ingredient: string;
+  quantite?: number | null;
+  unite?: string | null;
+}
+
+// --------------------------------------------------------------------------- //
+// Aubaines (IA)
+// --------------------------------------------------------------------------- //
+
+export interface DealsStatus {
+  disponible: boolean;
+}
+
+export interface DealMatch {
+  produit: string;
+  prix?: string | null;
+  rabais?: string | null;
+  ingredient_liste?: string | null;
+  pertinent: boolean;
+  note?: string | null;
+}
+
+export interface DealsScanResponse {
+  ok: boolean;
+  disponible: boolean;
+  message?: string | null;
+  aubaines: DealMatch[];
+}

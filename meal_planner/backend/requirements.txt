@@ -3,6 +3,8 @@ fastapi==0.116.1
 uvicorn[standard]==0.34.0
 sqlalchemy==2.0.36
 pydantic==2.10.4
+# IA — Alerte aubaines (API Claude)
+anthropic==0.116.0
 # Scraping de recettes
 recipe-scrapers==15.11.0
 httpx==0.28.1
