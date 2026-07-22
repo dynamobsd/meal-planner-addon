@@ -17,8 +17,10 @@ FROM python:3.12-slim
 # Le loader dynamique doit trouver libpython3.12.so.1.0 (dans /usr/local/lib).
 # Sous le runtime HA, /etc/ld.so.cache n'est pas toujours consulté -> sans ça :
 # « python: error while loading shared libraries: libpython3.12.so.1.0 ».
+# Triple ceinture : config permanente du loader + cache + variable d'env.
+# (run.sh re-force aussi LD_LIBRARY_PATH au démarrage.)
 ENV LD_LIBRARY_PATH=/usr/local/lib
-RUN ldconfig
+RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/usr-local-lib.conf && ldconfig
 
 WORKDIR /app
 COPY backend/requirements.txt ./
