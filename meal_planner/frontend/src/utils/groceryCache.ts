@@ -60,15 +60,25 @@ export function enqueuePatch(id: number, coche: 0 | 1): void {
  */
 export async function flushQueue(): Promise<void> {
   if (typeof navigator !== 'undefined' && !navigator.onLine) return;
-  let q = readQueue();
+  const q = readQueue();
   if (q.length === 0) return;
-  const remaining: PendingPatch[] = [];
+  const done: PendingPatch[] = [];
   for (const p of q) {
     try {
       await patchGrocery(p.id, { coche: p.coche });
+      done.push(p); // envoyé avec succès
     } catch {
-      remaining.push(p); // on garde pour plus tard
+      /* échec : reste en file pour un prochain essai */
     }
   }
-  writeQueue(remaining);
+  // On NE réécrit PAS `remaining` en aveugle : des actions ont pu être
+  // ajoutées pendant les `await` (nouveau cochage, ou re-cochage avec une
+  // valeur plus récente). On relit la file courante et on retire uniquement
+  // les entrées effectivement envoyées (même id ET même valeur), ce qui
+  // préserve toute action empilée entre-temps.
+  const current = readQueue();
+  const stillPending = current.filter(
+    (p) => !done.some((d) => d.id === p.id && d.coche === p.coche),
+  );
+  writeQueue(stillPending);
 }
